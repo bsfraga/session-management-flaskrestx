@@ -1,30 +1,38 @@
-from flask import request, jsonify, make_response
-from flask_restful import Resource
+from flask import request
+from flask_jwt_extended import create_access_token, get_jwt, jwt_required
+from flask_restx import Namespace, Resource, fields
+from models.user import UserModel
 from werkzeug.security import check_password_hash
 
-import jwt
-import datetime
+login_ns = Namespace('login', description='Perform Login')
 
-from model.user import user_model as user
+login = login_ns.model('login', {
+    'username': fields.String('Registered username'),
+    'password': fields.String('Password from the respective informed registered username')
+})
 
 class Login(Resource):
-    
+
+    @login_ns.expect(login)
     def post(self):
-        auth = request.authorization
+        auth = request.get_json()
 
-        if not auth or not auth.username or not auth.password:
-            return {"error" : "not authenticated"}, 401
+        print(auth)
 
-        user = User.query.filter_by(username=auth.username).first()
+        if not auth or not auth['username'] or not auth['password']:
+            return {"error": "not authenticated"}, 401
+
+        user = UserModel.query.filter_by(username=auth['username']).first()
 
         if not user:
-            return {"error" : "user not found"}, 404
+            return {'message': 'User not found'}, 404
 
-        if check_password_hash(user.password, auth.password):
-            token = jwt.encode({'public_id': user.public_id,
-                                'expirationTime': datetime.datetime.utcnow()+datetime.timedelta(60),
-                                'key': 'ThisShouldKeepAsASecret'})
-            return jsonify(token=token.decode('UTF-8'), 
-                            message="User successfully logged in."), 200
+        if not user:
+            return {"error": "user not found"}, 404
 
-        return jsonify(error="bad request"), 401
+        if check_password_hash(user.password, auth['password']):
+            token = create_access_token(identity=user.id)
+            return {'token': token,
+                    'message': "User successfully logged in."}, 200
+
+        return {'error':"bad request"}, 401
