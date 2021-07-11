@@ -7,4 +7,4 @@ class UserSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = UserModel
         load_instance = True
-        load_only = ("id", "password",)
+        load_only = ("id", "password", "last_login", "last_pswd_change", "last_email_change",)
