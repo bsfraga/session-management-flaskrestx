@@ -12,6 +12,11 @@ from resources.users import User, Users, userdoc_ns
 from sql_alchemy import db
 from models.token_blocklist import TokenBlocklist
 
+import os
+
+#Heroku database config
+DATABASE_URL = os.environ['DATABASE_URL']
+
 app = Flask(__name__)
 blueprint = Blueprint('api', __name__, url_prefix='/api')
 authorizations = {
@@ -30,7 +35,7 @@ app.register_blueprint(blueprint)
 jwt = JWTManager(app)
 app.config['JWT_SECRET_KEY'] = 'NoneShouldKnowThisSecret'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
