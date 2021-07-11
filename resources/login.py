@@ -21,7 +21,7 @@ class Login(Resource):
         if not data or not data['username'] or not data['password']:
             return {"error": "not authenticated"}, 401
 
-        user = UserModel.filter_by_username(data['username'])
+        user = UserModel.find_by_username(data['username'])
 
         if not user:
             return {'message': 'User not found'}, 404

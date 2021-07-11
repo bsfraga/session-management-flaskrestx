@@ -59,6 +59,7 @@ class User(Resource):
         return newuser_schema.dump(new_user), 201
 
     @jwt_required(locations=["headers"])
+    @userdoc_ns.header("Authorization")
     @userdoc_ns.response(200, description='', model=userdoc)
     def get(self, name):
         user = UserModel.find_by_name(name)
@@ -69,6 +70,7 @@ class User(Resource):
         return user_schema.dump(user), 200
 
     @jwt_required(locations=["headers"])
+    @userdoc_ns.header("Authorization")
     def delete(self, id):
         own_id = get_jwt_identity()
 
@@ -86,10 +88,14 @@ class User(Resource):
         return {"message": f"User id[{id}] has bem deleted."}, 200
 
     @jwt_required(locations=["headers"])
+    @userdoc_ns.header("Authorization")
     @userdoc_ns.expect(userdoc_put)
     def put(self, id):
         user = UserModel.find_by_id(id)
         data = request.get_json()
+
+        if not data:
+            return {'message': 'Bad request.'}, 400
 
         if user:
             if user.email and data['email'] != user.email:
@@ -100,7 +106,7 @@ class User(Resource):
             user.email = data['email'] if data['email'] else user.email
             user.password = generate_password_hash(data['password'], method='sha256') if data['password'] else user.password
         else:
-            data = user_schema.load(user)
+            return {'message': 'User not found.'}, 404
 
         user.save_to_db()
         return user_schema.dump(user), 200
@@ -108,7 +114,7 @@ class User(Resource):
 class Users(Resource):
 
     @jwt_required(locations=["headers"])
-    @userdoc_ns.header("Authorization")
+    @userdoc_ns.header("Authorization", description='Authorization token.')
     @userdoc_ns.response(200, description="Get all users", model=user_doc_list)
     def get(self):
         return users_list_schema.dump(UserModel.find_all()), 200
