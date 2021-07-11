@@ -15,7 +15,7 @@ from models.token_blocklist import TokenBlocklist
 import os
 
 #Heroku database config
-DATABASE_URL = os.environ['DATABASE_URL']
+DATABASE_URL = os.environ['DB_URL']
 
 app = Flask(__name__)
 
