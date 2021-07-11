@@ -18,6 +18,7 @@ import os
 DATABASE_URL = os.environ['DATABASE_URL']
 
 app = Flask(__name__)
+
 blueprint = Blueprint('api', __name__, url_prefix='/api')
 authorizations = {
     'api_key': {
@@ -38,6 +39,8 @@ app.config['JWT_SECRET_KEY'] = 'NoneShouldKnowThisSecret'
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
+
+db.init_app(app)
 
 api.add_namespace(login_ns)
 api.add_namespace(logout_ns)
@@ -75,6 +78,6 @@ userdoc_ns.add_resource(User, '/<int:id>', methods=['DELETE'])
 userdoc_ns.add_resource(User, '/<int:id>', methods=['PUT'])
 
 if __name__ == '__main__':
-    db.init_app(app)
+    # db.init_app(app)
     ma.init_app(app)
     app.run(debug=True)
