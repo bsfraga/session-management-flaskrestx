@@ -30,8 +30,7 @@ app.register_blueprint(blueprint)
 jwt = JWTManager(app)
 app.config['JWT_SECRET_KEY'] = 'NoneShouldKnowThisSecret'
 
-# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://developer:0a306c18cccX*@192.168.0.210:3306/dblog'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
