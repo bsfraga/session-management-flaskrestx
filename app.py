@@ -7,14 +7,13 @@ from blacklist import BLACKLIST
 from ma import ma
 from resources.login import Login, login_ns
 from resources.logout import Logout, logout_ns
-from resources.users import User, Users, userdoc_ns
 
 from sql_alchemy import db
 from models.token_blocklist import TokenBlocklist
 
 import os
 
-#Heroku database config
+# Heroku database config
 DATABASE_URL = os.environ['DB_URL']
 
 app = Flask(__name__)
@@ -30,7 +29,9 @@ authorizations = {
 api = Api(blueprint, doc='/doc',
           title='Sample Login Python Flask-RestX Application',
           authorizations=authorizations,
-          security='api_key')
+          security='api_key'
+          )
+
 app.register_blueprint(blueprint)
 
 jwt = JWTManager(app)
@@ -44,7 +45,6 @@ db.init_app(app)
 
 api.add_namespace(login_ns)
 api.add_namespace(logout_ns)
-api.add_namespace(userdoc_ns)
 
 
 @app.before_first_request
@@ -61,7 +61,7 @@ def check_if_token_revoked(jwt_header, jwt_payload):
 
 @jwt.revoked_token_loader
 def invalid_token(jwt_header, jwt_payload):
-    return {'message': 'Your are not logged in.'}, 401
+    return {'message': 'You are not logged in.'}, 401
 
 
 @api.errorhandler(ValidationError)
@@ -71,13 +71,7 @@ def handle_validation_error(error):
 
 login_ns.add_resource(Login, '/perform')
 logout_ns.add_resource(Logout, '/revoke')
-userdoc_ns.add_resource(User, '/new', methods=['POST'])
-userdoc_ns.add_resource(Users, '/all', methods=['GET'])
-userdoc_ns.add_resource(User, '/<string:name>', methods=['GET'])
-userdoc_ns.add_resource(User, '/<int:id>', methods=['DELETE'])
-userdoc_ns.add_resource(User, '/<int:id>', methods=['PUT'])
 
 if __name__ == '__main__':
-    # db.init_app(app)
     ma.init_app(app)
-    app.run(debug=True)
+    app.run(port=5001, debug=True)

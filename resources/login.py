@@ -15,11 +15,12 @@ login = login_ns.model('login', {
 class Login(Resource):
 
     @login_ns.expect(login)
+    @login_ns.doc(security=None)
     def post(self):
         data = request.get_json()
 
         if not data or not data['username'] or not data['password']:
-            return {"error": "not authenticated"}, 401
+            return {"error": "not authenticated"}, 400
 
         user = UserModel.find_by_username(data['username'])
 
@@ -32,5 +33,3 @@ class Login(Resource):
                 user.track_last_login_datetime()
             return {'token': token,
                     'message': "User successfully logged in."}, 200
-
-        # return {'error': "bad request"}, 401
