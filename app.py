@@ -14,7 +14,7 @@ from models.token_blocklist import TokenBlocklist
 import os
 
 # Heroku database config
-DATABASE_URL = os.environ['DB_URL']
+# DATABASE_URL = os.environ['DB_URL']
 
 app = Flask(__name__)
 
@@ -37,7 +37,7 @@ app.register_blueprint(blueprint)
 jwt = JWTManager(app)
 app.config['JWT_SECRET_KEY'] = 'NoneShouldKnowThisSecret'
 
-app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['PROPAGATE_EXCEPTIONS'] = True
 
