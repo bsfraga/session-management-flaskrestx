@@ -74,4 +74,4 @@ logout_ns.add_resource(Logout, '/revoke')
 
 if __name__ == '__main__':
     ma.init_app(app)
-    app.run(port=5001, debug=True)
+    app.run(port=5001)
